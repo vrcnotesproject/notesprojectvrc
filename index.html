@@ -6,17 +6,47 @@
     <title>The Notes Project</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #001F3F; /* Navy blue */
-            color: #FFFFFF;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: navy;
+            color: white;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
             overflow: hidden;
-            position: relative;
+        }
+        form {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            z-index: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+        }
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: white;
+            color: navy;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
         #stars {
             position: absolute;
@@ -24,151 +54,82 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
-            overflow: hidden;
+            pointer-events: none;
         }
         .star {
             position: absolute;
             background: white;
             border-radius: 50%;
-            animation: twinkle 5s infinite ease-in-out;
-            opacity: 0.8;
+            opacity: 0;
+            animation: twinkle 3s infinite ease-in-out;
         }
         @keyframes twinkle {
-            0%, 100% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 0.2; transform: scale(1.5); }
-        }
-        #form-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            text-align: center;
-            z-index: 1;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            text-align: left;
-            margin: 10px 0 5px;
-            font-size: 14px;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 16px;
-        }
-        input[readonly] {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        textarea {
-            resize: none;
-            height: 150px;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #007AFF; /* Apple blue */
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #0056B3;
-        }
-        #char-count {
-            text-align: right;
-            font-size: 12px;
-            color: #BBB;
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js"></script>
 </head>
 <body>
     <div id="stars"></div>
-    <div id="form-container">
-        <h1>Leave Your Note</h1>
-        <form id="note-form">
-            <label for="username">Username</label>
-            <input type="text" id="username" readonly>
-            <label for="position">Position</label>
-            <input type="text" id="position" readonly>
-            <label for="note">Note (max 300 chars)</label>
-            <textarea id="note" maxlength="300"></textarea>
-            <div id="char-count">0/300</div>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
+    <form id="noteForm">
+        <label>Username: <input type="text" id="username" readonly></label>
+        <label>Position X: <input type="text" id="x" readonly></label>
+        <label>Position Y: <input type="text" id="y" readonly></label>
+        <label>Position Z: <input type="text" id="z" readonly></label>
+        <label>Note (max 300 chars): <textarea id="text" maxlength="300"></textarea></label>
+        <button type="submit">Submit</button>
+    </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Replace with your actual Firebase config from Step 1
-        const firebaseConfig = {
-          apiKey: "YOUR_API_KEY",
-          authDomain: "the-notes-project-76941.firebaseapp.com",
-          databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com",
-          projectId: "the-notes-project-76941",
-          storageBucket: "the-notes-project-76941.appspot.com",
-          messagingSenderId: "YOUR_SENDER_ID",
-          appId: "YOUR_APP_ID"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        const supabaseUrl = 'https://your-project.supabase.co';  // Replace with your Supabase URL
+        const supabaseKey = 'your-anon-key';  // Replace with your Supabase anon key
+        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
 
-        // Get query params
-        const urlParams = new URLSearchParams(window.location.search);
-        const username = urlParams.get('username') || 'Unknown';
-        const posStr = urlParams.get('pos') || '0,0,0';
-        const pos = posStr.split(',').map(Number);
+        // Get query params and prefill
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('username').value = params.get('username') || '';
+        document.getElementById('x').value = params.get('x') || '';
+        document.getElementById('y').value = params.get('y') || '';
+        document.getElementById('z').value = params.get('z') || '';
 
-        document.getElementById('username').value = username;
-        document.getElementById('position').value = posStr;
-
-        // Char count
-        const textarea = document.getElementById('note');
-        const charCount = document.getElementById('char-count');
-        textarea.addEventListener('input', () => {
-            charCount.textContent = `${textarea.value.length}/300`;
-        });
-
-        // Submit
-        document.getElementById('note-form').addEventListener('submit', (e) => {
+        // Form submit
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const text = textarea.value.trim();
-            if (text.length === 0 || text.length > 300) return alert('Note must be 1-300 chars.');
-            const date = new Date().toISOString();
-            database.ref(`notes/${username}`).set({
-                text: text,
-                date: date,
-                pos: { x: pos[0], y: pos[1], z: pos[2] }
-            }).then(() => {
-                alert('Note submitted!');
-                window.close(); // Try to close tab
-            }).catch(err => alert('Error: ' + err.message));
+            const username = params.get('username');
+            const x = parseFloat(params.get('x'));
+            const y = parseFloat(params.get('y'));
+            const z = parseFloat(params.get('z'));
+            const text = document.getElementById('text').value.trim();
+
+            if (!username || isNaN(x) || isNaN(y) || isNaN(z) || text.length === 0 || text.length > 300) {
+                alert('Invalid input. Text must be 1-300 chars, and all fields required.');
+                return;
+            }
+
+            const { error } = await supabase.from('notes').insert({ username, date: new Date().toISOString(), text, x, y, z });
+
+            if (error) {
+                if (error.code === '23505') {
+                    alert('One note per person only.');
+                } else {
+                    alert('Error submitting note: ' + error.message);
+                }
+            } else {
+                alert('Note submitted successfully!');
+            }
         });
 
         // Animated stars
-        const starsContainer = document.getElementById('stars');
         for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star';
             star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
-            star.style.left = `${Math.random() * 100}%`;
             star.style.top = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 5}s`;
-            starsContainer.appendChild(star);
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
+            document.getElementById('stars').appendChild(star);
         }
     </script>
 </body>
