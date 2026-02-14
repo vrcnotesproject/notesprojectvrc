@@ -1,36 +1,205 @@
 <!DOCTYPE html>
-<html>
-<body>
-    <h2>The Notes Project: Submitter</h2>
-    <input type="text" id="vrcCode" placeholder="Paste Code from VRChat">
-    <textarea id="noteContent" placeholder="Your message..."></textarea>
-    <button onclick="submitNote()">Post Note</button>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        const firebaseConfig = { databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com/" };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        window.submitNote = function() {
-            const raw = document.getElementById('vrcCode').value.split('|');
-            if(raw.length < 5) return alert("Invalid Code");
-
-            const [name, x, y, z, check] = raw;
-            const content = document.getElementById('noteContent').value;
-
-            // This path 'notes/Username' ensures one note per player (overwrites old ones)
-            set(ref(db, 'notes/' + name), {
-                user: name,
-                x: parseFloat(x),
-                y: parseFloat(y),
-                z: parseFloat(z),
-                text: content,
-                time: Date.now()
-            }).then(() => alert("Note Placed!"));
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Notes Project | Submitter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0e17;
+            --card-bg: #161e2d;
+            --accent-color: #007aff;
+            --accent-glow: rgba(0, 122, 255, 0.3);
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
         }
-    </script>
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        h1 {
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.2s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0063d1;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        #status {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            min-height: 1.2rem;
+        }
+
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>The Notes Project</h1>
+    <p class="subtitle">Leave your mark in the world.</p>
+
+    <div class="input-group">
+        <label>Verification Code</label>
+        <input type="text" id="vrcCode" placeholder="Paste the code from Unity/VRC">
+    </div>
+
+    <div class="input-group">
+        <label>Your Message</label>
+        <textarea id="noteContent" maxlength="140" placeholder="What's on your mind?"></textarea>
+    </div>
+
+    <button id="submitBtn" onclick="submitNote()">Upload Note</button>
+    <div id="status"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Your Firebase Config
+    const firebaseConfig = { 
+        databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com/" 
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.submitNote = function() {
+        const status = document.getElementById('status');
+        const btn = document.getElementById('submitBtn');
+        const codeInput = document.getElementById('vrcCode').value.trim();
+        const content = document.getElementById('noteContent').value.trim();
+
+        if (!codeInput || !content) {
+            showStatus("Please fill in both fields.", "error");
+            return;
+        }
+
+        const raw = codeInput.split('|');
+        if(raw.length < 5) {
+            showStatus("Invalid code format. Try again!", "error");
+            return;
+        }
+
+        const [name, x, y, z, check] = raw;
+
+        // Visual feedback
+        btn.disabled = true;
+        btn.innerText = "Uploading...";
+        status.innerText = "";
+
+        set(ref(db, 'notes/' + name), {
+            user: name,
+            x: parseFloat(x),
+            y: parseFloat(y),
+            z: parseFloat(z),
+            text: content,
+            time: Date.now()
+        }).then(() => {
+            showStatus("Success! Your note is now global.", "success");
+            btn.disabled = false;
+            btn.innerText = "Update Note";
+        }).catch((err) => {
+            showStatus("Database error. Check your rules!", "error");
+            btn.disabled = false;
+            btn.innerText = "Upload Note";
+        });
+    }
+
+    function showStatus(msg, type) {
+        const s = document.getElementById('status');
+        s.innerText = msg;
+        s.className = type;
+    }
+</script>
+
 </body>
 </html>
