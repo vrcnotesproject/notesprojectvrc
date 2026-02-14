@@ -76,7 +76,7 @@
         }
         textarea {
             resize: none;
-            height: 100px;
+            height: 140px;
         }
         button {
             width: 100%;
@@ -97,6 +97,10 @@
         button:active {
             transform: scale(0.98);
         }
+        button:disabled {
+            background-color: #334155;
+            cursor: not-allowed;
+        }
         #status {
             margin-top: 15px;
             font-size: 0.85rem;
@@ -109,63 +113,146 @@
 <body>
 <div class="container">
     <h1>The Notes Project</h1>
-    <p class="subtitle"> </p>
+    <p class="subtitle">Leave a note in VRChat</p>
+    
     <div class="input-group">
         <label>Verification Code</label>
-        <input type="text" id="vrcCode" placeholder="Input your code from VRC">
+        <input type="text" id="vrcCode" placeholder="Paste the code from VRChat">
     </div>
+    
     <div class="input-group">
-        <label>Your Message</label>
-        <textarea id="noteContent" maxlength="300" placeholder="What's on your mind?"></textarea>
+        <label>Your Message (max 300 characters)</label>
+        <textarea id="noteContent" maxlength="300" placeholder="What's on your mind? (short poems welcome)"></textarea>
     </div>
+    
     <button id="submitBtn" onclick="submitNote()">Upload Note</button>
     <div id="status"></div>
 </div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-    // Your Firebase Config
+
     const firebaseConfig = {
         databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com/"
     };
-   
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+
+    console.log("[NotesSite] Starting Firebase initialization...");
+    let app, db;
+    try {
+        app = initializeApp(firebaseConfig);
+        db = getDatabase(app);
+        console.log("[NotesSite] Firebase initialized successfully");
+    } catch (err) {
+        console.error("[NotesSite] Firebase initialization failed:", err);
+        showStatus("Failed to connect to database. Check console.", "error");
+    }
+
     window.submitNote = function() {
+        console.log("[NotesSite] submitNote() called");
+
         const status = document.getElementById('status');
         const btn = document.getElementById('submitBtn');
         const codeInput = document.getElementById('vrcCode').value.trim();
         const content = document.getElementById('noteContent').value.trim();
+
+        console.log("[NotesSite] Input values:", { code: codeInput, contentLength: content.length });
+
         if (!codeInput || !content) {
             showStatus("Please fill in both fields.", "error");
             return;
         }
+
         const raw = codeInput.split('|');
-        if(raw.length !== 5) {
-            showStatus("Invalid code format. Try again!", "error");
+        console.log("[NotesSite] Split result:", raw);
+
+        if (raw.length !== 5) {
+            showStatus("Invalid code format (must have 5 parts separated by |).", "error");
             return;
         }
+
         const [name, xStr, yStr, zStr, check] = raw;
-        if (!name || name.length < 1) {
-            showStatus("Invalid username.", "error");
-            return;
-        }
         const x = parseFloat(xStr);
         const y = parseFloat(yStr);
         const z = parseFloat(zStr);
-        if (isNaN(x) || isNaN(y) || isNaN(z)) {
-            showStatus("Invalid coordinates.", "error");
+
+        console.log("[NotesSite] Parsed coordinates:", { name, x, y, z, check });
+
+        if (isNaN(x) || isNaN(y) || isNaN(z) || !name) {
+            showStatus("Invalid coordinates or username in code.", "error");
             return;
         }
-        const maxCoord = 100;
-        if (Math.abs(x) > maxCoord || Math.abs(y) > maxCoord || Math.abs(z) > maxCoord) {
-            showStatus("Position out of bounds.", "error");
+
+        if (Math.abs(x) > 100 || Math.abs(y) > 100 || Math.abs(z) > 100) {
+            showStatus("Position coordinates out of allowed range (±100).", "error");
             return;
         }
+
         const computedCheck = (x + y + z).toFixed(2);
         if (check !== computedCheck) {
-            showStatus("Invalid verification check.", "error");
+            showStatus("Verification check failed. Make sure you copied the code exactly.", "error");
             return;
         }
+
+        // Basic profanity/slur filter (lowercase check)
         const lowerContent = content.toLowerCase();
-        const slurs = ["abbie", "abe", "abie", "abc", "abcd", "abid", "abeed", "abo", "abbo", "afro engineering", "african engineering", "nigger rigging", "ah chah", "ali baba", "alligator bait", "gator bait", "amalamu", "amaqheya", "amalek", "amalekite", "ang mo", "ann", "annamite", "mites", "ape", "apple", "arapis", "arapissa", "arapena", "arabush", "araboosh", "aravush", "argie", "argies", "armo", "asing", "aseng", "ashke-nazi", "aunt jemima", "aunt jane", "aunt mary", "aunt sally", "bachicha", "baiano", "balija", "baluba", "bamboula", "bambus", "banaan", "banana", "banderite", "barbarian", "barya", "bareya", "beaner", "beaney", "bimbo", "bing", "binghi", "black buck", "black brute", "brown buck", "brown brute", "blackie", "blatte", "bluegum", "boche", "bosche", "bosch", "boeotian", "boerehater", "boer-hater", "boer hater", "bog", "bogtrotter", "bog-trotter", "bogate", "bohunk", "bolita", "bong", "boong", "boang", "bong", "bung", "boonga", "boong", "bunga", "boonie", "bootlip", "bougnoule", "bounty bar", "bozgor", "brillo pad", "brownie", "buckwheat", "buddhahead", "buckra", "bakra", "bulbash", "bule", "bumbay", "burrhead", "burr-head", "burr head", "bushy", "amadushie", "buzzurro", "cabbage eater", "canaca", "cameljockey", "camel drivers", "camel riders", "carcamano", "chakhchakh", "baboon", "chakma", "chankoro", "charlie", "china swede", "chee-chee", "chi-chi", "cheese-eating surrender monkeys", "chefur", "tsekwa", "chekwa", "chernomazy", "chernozhopy", "chilango", "chilote", "chinaman", "ching chong", "chink", "chinky", "chinky chonky", "chirigüillo", "chiriwillo", "chonky", "christ-killer", "choc ice", "cholo", "chile", "chon", "baka-chon", "chow", "chowmein", "chuchmek", "chechmek", "chug", "chukhonets", "chukhna", "churka", "ciapaty", "ciapak", "cigányforma", "cigány népek", "cioară", "cina", "cokin", "coconut", "colono", "coño", "coolie", "coon", "cooney", "coonass", "coon-ass", "coreano", "cotton picker", "cracker", "crow", "crucco", "crucca", "culchie", "curepí", "curry-muncher", "cushi", "kushi", "czarnuch", "czarnucha", "dago", "dego", "dal khor", "dalle", "batak dalle", "darky", "darkey", "darkie", "dei", "dei hire", "diversity hire", "dhoti", "dink", "dogan", "dogun", "dothead", "dot", "dune coon", "eight ball", "8ball", "engelsman", "eyetie", "fankui", "fan-kui", "fangui", "gui-zi", "guizi", "gui", "fresh off the boat", "off the boat", "farang khi nok", "fenian", "festival children", "feuj", "fidschi", "fjellabe", "flip", "fodechincho", "franchute", "frenk", "fritz", "fricc", "fryc", "фриц", "fricis", "frog", "froggy", "frogeater", "froschfresser", "fuzzy-wuzzy", "gabacho", "gabel", "gabibbo", "cabibbo", "gadjo", "gaijin", "galla", "gam", "gammat", "gans", "Ганс", "garoi", "geomdung-i", "gexhë", "ghati", "gin", "gin jockey", "godo", "godon", "golliwog", "gook", "gook-eye", "gooky", "goombah", "gora", "goy", "goyim", "goyum", "grago", "gragok", "greaseball", "greaser", "greenhorn", "gringo", "groid", "gub", "gubba", "guiri", "guizi", "guido", "guidette", "guinea", "ginzo", "gummihals", "gusano", "gweilo", "gwailo", "kwai lo", "gyp", "gip", "gypsy", "gyppo", "gippo", "gypo", "gyppie", "gyppy", "gipp", "hairyback", "hajji", "hadji", "haji", "half-breed", "half-caste", "hambaya", "hamba", "haole", "heeb", "hebe", "heukhyoeng", "hevosmies", "hike", "hillbilly", "honky", "honkey", "honkie", "hori", "hottentot", "hotnot", "houtkop", "huan
+        const prohibited = ["nigger", "faggot", "chink", "kike", "spic", "coon", "jewboy", "wetback"];
+        if (prohibited.some(word => lowerContent.includes(word))) {
+            showStatus("Message contains prohibited language.", "error");
+            return;
+        }
+
+        console.log("[NotesSite] All validation passed → attempting database write");
+
+        btn.disabled = true;
+        btn.innerText = "Uploading...";
+        status.innerText = "";
+        status.className = "";
+
+        if (!db) {
+            showStatus("Database connection not ready.", "error");
+            resetButton("Upload Note");
+            return;
+        }
+
+        set(ref(db, 'notes/' + name), {
+            user: name,
+            x: x,
+            y: y,
+            z: z,
+            text: content,
+            time: Date.now()
+        })
+        .then(() => {
+            console.log("[NotesSite] Write successful!");
+            showStatus("Success! Your note is now in the world.", "success");
+            resetButton("Update Note");
+        })
+        .catch((err) => {
+            console.error("[NotesSite] Database write failed:", err);
+            let msg = "Upload failed.";
+            if (err.code === 'PERMISSION_DENIED') {
+                msg += " Database permissions issue.";
+            } else if (err.message) {
+                msg += " " + err.message;
+            }
+            showStatus(msg, "error");
+            resetButton("Upload Note");
+        });
+    };
+
+    function showStatus(msg, type) {
+        const s = document.getElementById('status');
+        s.innerText = msg;
+        s.className = type;
+        console.log("[NotesSite] Status displayed:", msg, type);
+    }
+
+    function resetButton(text) {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = false;
+        btn.innerText = text || "Upload Note";
+    }
+</script>
+</body>
+</html>
