@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Notes Project - Submit Your Note</title>
+    <title>The Notes Project - Leave Your Mark</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #16213e 50%, #0f3460 100%);
+            background: linear-gradient(135deg, #0a1428 0%, #1a2d5c 50%, #0f1f3c 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,15 +22,14 @@
             position: relative;
         }
 
-        /* Animated Stars Background */
-        .stars {
+        /* Animated stars background */
+        .stars-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
         }
 
         .star {
@@ -39,7 +38,7 @@
             height: 2px;
             background: white;
             border-radius: 50%;
-            animation: twinkle 3s ease-in-out infinite;
+            animation: twinkle 3s infinite;
         }
 
         @keyframes twinkle {
@@ -47,24 +46,25 @@
             50% { opacity: 1; }
         }
 
+        /* Main container */
         .container {
-            position: relative;
-            z-index: 1;
-            background: rgba(15, 52, 96, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 31, 60, 0.95);
+            border: 2px solid rgba(100, 150, 255, 0.3);
             border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            width: 90%;
-            max-width: 450px;
+            padding: 50px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
+                        0 0 40px rgba(100, 150, 255, 0.15);
+            backdrop-filter: blur(10px);
+            z-index: 10;
             animation: slideIn 0.6s ease-out;
         }
 
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
@@ -72,345 +72,352 @@
             }
         }
 
-        h1 {
-            color: #00d4ff;
-            margin-bottom: 10px;
-            font-size: 28px;
+        .header {
             text-align: center;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            margin-bottom: 40px;
         }
 
-        .subtitle {
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
-            margin-bottom: 30px;
+        .header h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(100, 150, 255, 0.4);
+        }
+
+        .header p {
+            color: rgba(200, 220, 255, 0.7);
             font-size: 14px;
+            letter-spacing: 1px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(200, 220, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
             margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .info-box {
-            background: rgba(0, 212, 255, 0.1);
-            border-left: 3px solid #00d4ff;
-            padding: 12px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .info-box p {
-            color: rgba(0, 212, 255, 0.8);
-            font-size: 12px;
-            line-height: 1.5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input[type="text"],
         textarea {
             width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
+            padding: 12px 15px;
+            background: rgba(30, 50, 100, 0.6);
+            border: 1px solid rgba(100, 150, 255, 0.4);
             border-radius: 8px;
-            color: white;
-            font-family: inherit;
+            color: #ffffff;
             font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: all 0.3s ease;
-            resize: none;
+            resize: vertical;
         }
 
         input[type="text"]:focus,
         textarea:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-        }
-
-        input[type="text"]::placeholder,
-        textarea::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            background: rgba(30, 50, 100, 0.8);
+            border-color: rgba(100, 180, 255, 0.8);
+            box-shadow: 0 0 15px rgba(100, 150, 255, 0.3);
         }
 
         textarea {
-            height: 120px;
-            margin-top: 8px;
+            min-height: 120px;
+            font-size: 13px;
         }
 
         .char-count {
-            color: rgba(255, 255, 255, 0.5);
+            text-align: right;
+            color: rgba(200, 220, 255, 0.5);
             font-size: 12px;
             margin-top: 5px;
-            text-align: right;
         }
 
         .char-count.warning {
-            color: #ff6b6b;
+            color: #ff9800;
+        }
+
+        .char-count.error {
+            color: #ff5252;
+        }
+
+        .info-box {
+            background: rgba(100, 150, 255, 0.1);
+            border-left: 3px solid rgba(100, 150, 255, 0.5);
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            color: rgba(200, 220, 255, 0.8);
+            font-size: 13px;
+            line-height: 1.5;
         }
 
         .position-display {
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            color: rgba(0, 212, 255, 0.8);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 12px;
+            border-radius: 5px;
+            color: rgba(180, 200, 255, 0.8);
+            font-size: 11px;
             font-family: 'Courier New', monospace;
+            margin-top: 5px;
             word-break: break-all;
         }
 
         button {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            padding: 13px;
+            background: linear-gradient(135deg, #6496ff 0%, #4a7fd9 100%);
             color: white;
             border: none;
             border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
-            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(100, 150, 255, 0.3);
         }
 
-        button:hover:not(:disabled) {
+        button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+            box-shadow: 0 15px 40px rgba(100, 150, 255, 0.5);
         }
 
-        button:active:not(:disabled) {
+        button:active {
             transform: translateY(0);
         }
 
         button:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-            font-size: 14px;
+        .success-message {
             display: none;
-        }
-
-        .message.success {
             background: rgba(76, 175, 80, 0.2);
-            color: #76ff76;
-            border: 1px solid rgba(76, 175, 80, 0.4);
-            display: block;
-        }
-
-        .message.error {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            border: 1px solid rgba(255, 107, 107, 0.4);
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            color: #00d4ff;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #4caf50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             text-align: center;
-            font-size: 14px;
+            animation: fadeIn 0.5s ease;
         }
 
-        .spinner {
-            border: 2px solid rgba(0, 212, 255, 0.2);
-            border-top: 2px solid #00d4ff;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 0.8s linear infinite;
-            margin: 10px auto;
+        .error-message {
+            display: none;
+            background: rgba(255, 82, 82, 0.2);
+            border: 1px solid rgba(255, 82, 82, 0.5);
+            color: #ff5252;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(200, 220, 255, 0.5);
+            font-size: 12px;
+        }
+
+        .position-label {
+            color: rgba(100, 180, 255, 0.6);
+            font-size: 11px;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
-    <div class="stars" id="starsContainer"></div>
+    <!-- Stars background -->
+    <div class="stars-container" id="starsContainer"></div>
 
+    <!-- Main form container -->
     <div class="container">
-        <h1>✦ The Notes Project ✦</h1>
-        <p class="subtitle">Leave your mark in virtual space</p>
-
-        <div class="info-box">
-            <p>💡 Your note will be placed at your current position and visible to all visitors.</p>
+        <div class="header">
+            <h1>✦ The Notes Project ✦</h1>
+            <p>Leave Your Mark in Space</p>
         </div>
 
+        <div id="successMessage" class="success-message">
+            ✓ Note submitted successfully!
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
         <form id="noteForm">
-            <div class="form-group">
-                <label for="username">Your VRChat Username</label>
-                <input type="text" id="username" placeholder="Enter your username" maxlength="50" disabled>
+            <div class="info-box">
+                📍 Your position in the world will be saved with this note. Make it count!
             </div>
 
             <div class="form-group">
-                <label>Your Position in World</label>
-                <div class="position-display" id="positionDisplay">
-                    Loading position data...
-                </div>
+                <label for="author">Your Name (VRChat Username)</label>
+                <input type="text" id="author" name="author" required maxlength="50" placeholder="e.g., YourUsername">
             </div>
 
             <div class="form-group">
-                <label for="content">Your Note (max 300 characters)</label>
-                <textarea id="content" placeholder="Write something meaningful..." maxlength="300"></textarea>
+                <label for="content">Your Note</label>
+                <textarea id="content" name="content" required maxlength="300" placeholder="Share your thoughts, memories, or wishes... (max 300 characters)"></textarea>
                 <div class="char-count"><span id="charCount">0</span>/300</div>
             </div>
 
-            <button type="submit" id="submitBtn">Submit Note</button>
-
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Submitting your note...</p>
+            <div class="form-group">
+                <label>Your Position</label>
+                <div class="position-display" id="positionDisplay">Waiting for position data...</div>
+                <div class="position-label">This will be extracted from the URL</div>
             </div>
 
-            <div class="message" id="message"></div>
+            <button type="submit">Submit Note</button>
         </form>
+
+        <div class="footer">
+            <p>Be respectful. Be creative. Be yourself.</p>
+        </div>
     </div>
 
     <script>
-        // Configuration
-        const SUPABASE_URL = 'https://qakgskygmvyoghmirrcp.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFha2dza3lnbXZ5b2dobWlycmNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTY3NDIsImV4cCI6MjA4NjY3Mjc0Mn0.MU0Tt31d0KYyFbVRjLZGEhGqS0_GzQMgGpN1m4JT578';
-
-        // Generate random stars
+        // Generate animated stars
         function createStars() {
-            const container = document.getElementById('starsContainer');
-            for (let i = 0; i < 100; i++) {
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
                 star.style.animationDelay = Math.random() * 3 + 's';
-                container.appendChild(star);
+                star.style.opacity = Math.random() * 0.5 + 0.3;
+                starsContainer.appendChild(star);
             }
         }
 
-        // Parse URL parameters
-        function getURLParameter(name) {
-            const params = new URLSearchParams(window.location.search);
-            return params.get(name);
-        }
-
-        // Initialize form
-        function initializeForm() {
-            const username = getURLParameter('username');
-            const posX = getURLParameter('x');
-            const posY = getURLParameter('y');
-            const posZ = getURLParameter('z');
-
-            if (username) {
-                document.getElementById('username').value = username;
-            }
-
-            if (posX && posY && posZ) {
-                document.getElementById('positionDisplay').textContent = 
-                    `X: ${parseFloat(posX).toFixed(2)}\nY: ${parseFloat(posY).toFixed(2)}\nZ: ${parseFloat(posZ).toFixed(2)}`;
-            }
-        }
+        // Initialize stars on page load
+        window.addEventListener('load', createStars);
 
         // Character counter
-        document.getElementById('content').addEventListener('input', function() {
-            const count = this.value.length;
-            const charCountEl = document.getElementById('charCount');
-            charCountEl.textContent = count;
+        const contentField = document.getElementById('content');
+        const charCount = document.getElementById('charCount');
 
-            if (count > 250) {
-                charCountEl.parentElement.classList.add('warning');
+        contentField.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+
+            if (count > 280) {
+                charCount.parentElement.classList.add('warning');
+            } else if (count > 300) {
+                charCount.parentElement.classList.add('error');
             } else {
-                charCountEl.parentElement.classList.remove('warning');
+                charCount.parentElement.classList.remove('warning', 'error');
             }
         });
+
+        // Parse URL parameters to get position data
+        function parsePositionFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const x = params.get('x') || '0';
+            const y = params.get('y') || '0';
+            const z = params.get('z') || '0';
+            const author = params.get('author') || '';
+
+            document.getElementById('positionDisplay').textContent = 
+                `X: ${parseFloat(x).toFixed(2)} | Y: ${parseFloat(y).toFixed(2)} | Z: ${parseFloat(z).toFixed(2)}`;
+
+            if (author) {
+                document.getElementById('author').value = decodeURIComponent(author);
+                document.getElementById('author').disabled = true; // Can't change author
+            }
+
+            // Store position data for submission
+            window.positionData = { x, y, z, author };
+        }
 
         // Form submission
-        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+        document.getElementById('noteForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const username = document.getElementById('username').value.trim();
+            const author = document.getElementById('author').value.trim();
             const content = document.getElementById('content').value.trim();
-            const posX = getURLParameter('x');
-            const posY = getURLParameter('y');
-            const posZ = getURLParameter('z');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
 
-            if (!username || !content || !posX || !posY || !posZ) {
-                showMessage('Missing required information', 'error');
+            if (!window.positionData) {
+                errorMessage.textContent = '❌ Position data missing. URL may be malformed.';
+                errorMessage.style.display = 'block';
                 return;
             }
 
-            if (content.length > 300) {
-                showMessage('Note exceeds 300 characters', 'error');
+            if (content.length === 0 || content.length > 300) {
+                errorMessage.textContent = '❌ Note must be between 1-300 characters.';
+                errorMessage.style.display = 'block';
                 return;
             }
 
-            showLoading(true);
+            if (!author) {
+                errorMessage.textContent = '❌ Please enter your username.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Prepare data for Supabase
+            const noteData = {
+                author: author,
+                content: content,
+                x_pos: parseFloat(window.positionData.x),
+                y_pos: parseFloat(window.positionData.y),
+                z_pos: parseFloat(window.positionData.z)
+            };
 
             try {
-                const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/notes`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'Prefer': 'return=minimal'
-                        },
-                        body: JSON.stringify({
-                            username,
-                            content,
-                            position_x: parseFloat(posX),
-                            position_y: parseFloat(posY),
-                            position_z: parseFloat(posZ),
-                            date: new Date().toISOString()
-                        })
-                    }
-                );
+                // Replace these with your actual Supabase credentials
+                const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+                const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify(noteData)
+                });
 
                 if (response.ok) {
-                    showMessage('✓ Note submitted successfully!', 'success');
-                    document.getElementById('content').value = '';
-                    document.getElementById('charCount').textContent = '0';
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    document.getElementById('noteForm').reset();
+                    charCount.textContent = '0';
                     setTimeout(() => {
-                        window.close();
-                    }, 2000);
+                        successMessage.style.display = 'none';
+                    }, 5000);
                 } else {
                     const error = await response.json();
-                    showMessage(`Error: ${error.message || 'Failed to submit note'}`, 'error');
+                    errorMessage.textContent = '❌ Error: ' + (error.message || 'Failed to submit note');
+                    errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                showMessage(`Error: ${error.message}`, 'error');
-            } finally {
-                showLoading(false);
+                errorMessage.textContent = '❌ Network error: ' + error.message;
+                errorMessage.style.display = 'block';
             }
         });
 
-        function showMessage(text, type) {
-            const messageEl = document.getElementById('message');
-            messageEl.textContent = text;
-            messageEl.className = `message ${type}`;
-        }
-
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            document.getElementById('submitBtn').disabled = show;
-        }
-
-        // Initialize on load
-        createStars();
-        initializeForm();
+        // Initialize on page load
+        window.addEventListener('load', parsePositionFromURL);
     </script>
 </body>
 </html>
