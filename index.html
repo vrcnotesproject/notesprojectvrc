@@ -3,50 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Notes Project</title>
+    <title>The Notes Project - Leave a Note</title>
     <style>
         body {
-            background-color: navy;
-            color: white;
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
+            background-color: #001233; /* Navy blue */
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
             overflow: hidden;
-        }
-        form {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            width: 300px;
-            z-index: 1;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 5px;
-            box-sizing: border-box;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-        }
-        textarea {
-            height: 100px;
-            resize: none;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: white;
-            color: navy;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
         #stars {
             position: absolute;
@@ -54,218 +23,133 @@
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            background: transparent;
+            overflow: hidden;
         }
         .star {
             position: absolute;
             background: white;
             border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 3s infinite ease-in-out;
+            animation: twinkle 5s infinite ease-in-out;
+            opacity: 0.8;
         }
         @keyframes twinkle {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.2; }
         }
-    </style>
-</head>
-<body>
-    <div id="stars"></div>
-    <form id="noteForm">
-        <label>Username: <input type="text" id="username" readonly></label>
-        <label>Position X: <input type="text" id="x" readonly></label>
-        <label>Position Y: <input type="text" id="y" readonly></label>
-        <label>Position Z: <input type="text" id="z" readonly></label>
-        <label>Note (max 300 chars): <textarea id="text" maxlength="300"></textarea></label>
-        <button type="submit">Submit</button>
-    </form>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabaseUrl = 'https://qakgskygmvyoghmirrcp.supabase.co';  // Replace with your Supabase URL
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFha2dza3lnbXZ5b2dobWlycmNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTY3NDIsImV4cCI6MjA4NjY3Mjc0Mn0.MU0Tt31d0KYyFbVRjLZGEhGqS0_GzQMgGpN1m4JT578';  // Replace with your Supabase anon key
-        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Get query params and prefill
-        const params = new URLSearchParams(window.location.search);
-        document.getElementById('username').value = params.get('username') || '';
-        document.getElementById('x').value = params.get('x') || '';
-        document.getElementById('y').value = params.get('y') || '';
-        document.getElementById('z').value = params.get('z') || '';
-
-        // Form submit
-        document.getElementById('noteForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = params.get('username');
-            const x = parseFloat(params.get('x'));
-            const y = parseFloat(params.get('y'));
-            const z = parseFloat(params.get('z'));
-            const text = document.getElementById('text').value.trim();
-
-            if (!username || isNaN(x) || isNaN(y) || isNaN(z) || text.length === 0 || text.length > 300) {
-                alert('Invalid input. Text must be 1-300 chars, and all fields required.');
-                return;
-            }
-
-            const { error } = await supabase.from('notes').insert({ username, date: new Date().toISOString(), text, x, y, z });
-
-            if (error) {
-                if (error.code === '23505') {
-                    alert('One note per person only.');
-                } else {
-                    alert('Error submitting note: ' + error.message);
-                }
-            } else {
-                alert('Note submitted successfully!');
-            }
-        });
-
-        // Animated stars
-        for (let i = 0; i < 100; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
-            star.style.top = `${Math.random() * 100}%`;
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 3}s`;
-            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
-            document.getElementById('stars').appendChild(star);
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Notes Project</title>
-    <style>
-        body {
-            background-color: navy;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
+        /* Generate 50 stars with random positions/sizes/animations */
+        .star:nth-child(odd) { animation-duration: 3s; }
+        .star:nth-child(even) { animation-duration: 4s; }
+        /* Form styling */
         form {
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 18, 51, 0.8); /* Darker navy overlay */
             padding: 20px;
             border-radius: 10px;
-            width: 300px;
+            width: 400px;
+            text-align: center;
             z-index: 1;
         }
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 5px;
-            box-sizing: border-box;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-        }
         textarea {
-            height: 100px;
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            background: #001233;
+            color: white;
             resize: none;
         }
         button {
-            width: 100%;
-            padding: 10px;
-            background-color: white;
-            color: navy;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #003366; /* Deeper blue */
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        #stars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+        button:hover {
+            background: #004d99;
         }
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle 3s infinite ease-in-out;
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+        #message {
+            margin-top: 10px;
+            color: #ffcc00; /* Yellow for notices */
         }
     </style>
 </head>
 <body>
     <div id="stars"></div>
     <form id="noteForm">
-        <label>Username: <input type="text" id="username" readonly></label>
-        <label>Position X: <input type="text" id="x" readonly></label>
-        <label>Position Y: <input type="text" id="y" readonly></label>
-        <label>Position Z: <input type="text" id="z" readonly></label>
-        <label>Note (max 300 chars): <textarea id="text" maxlength="300"></textarea></label>
+        <h2>Leave Your Note</h2>
+        <p>Username: <span id="usernameDisplay"></span></p>
+        <p>Position: <span id="positionDisplay"></span></p>
+        <textarea id="content" maxlength="300" placeholder="Enter your note (max 300 chars)..." required></textarea>
         <button type="submit">Submit</button>
+        <div id="message"></div>
     </form>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseUrl = 'https://your-project.supabase.co';  // Replace with your Supabase URL
-        const supabaseKey = 'your-anon-key';  // Replace with your Supabase anon key
-        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
-
-        // Get query params and prefill
-        const params = new URLSearchParams(window.location.search);
-        document.getElementById('username').value = params.get('username') || '';
-        document.getElementById('x').value = params.get('x') || '';
-        document.getElementById('y').value = params.get('y') || '';
-        document.getElementById('z').value = params.get('z') || '';
-
-        // Form submit
-        document.getElementById('noteForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = params.get('username');
-            const x = parseFloat(params.get('x'));
-            const y = parseFloat(params.get('y'));
-            const z = parseFloat(params.get('z'));
-            const text = document.getElementById('text').value.trim();
-
-            if (!username || isNaN(x) || isNaN(y) || isNaN(z) || text.length === 0 || text.length > 300) {
-                alert('Invalid input. Text must be 1-300 chars, and all fields required.');
-                return;
-            }
-
-            const { error } = await supabase.from('notes').insert({ username, date: new Date().toISOString(), text, x, y, z });
-
-            if (error) {
-                if (error.code === '23505') {
-                    alert('One note per person only.');
-                } else {
-                    alert('Error submitting note: ' + error.message);
-                }
-            } else {
-                alert('Note submitted successfully!');
-            }
-        });
-
         // Animated stars
-        for (let i = 0; i < 100; i++) {
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
-            star.style.top = `${Math.random() * 100}%`;
+            star.style.width = star.style.height = `${Math.random() * 3 + 1}px`;
             star.style.left = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 3}s`;
-            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
-            document.getElementById('stars').appendChild(star);
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 5}s`;
+            starsContainer.appendChild(star);
         }
+
+        // Get URL params
+        const params = new URLSearchParams(window.location.search);
+        const username = params.get('username') || 'Unknown';
+        const x = params.get('x') || '0';
+        const y = params.get('y') || '0';
+        const z = params.get('z') || '0';
+
+        document.getElementById('usernameDisplay').textContent = username;
+        document.getElementById('positionDisplay').textContent = `(${x}, ${y}, ${z})`;
+
+        // Submit form
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = document.getElementById('content').value.trim();
+            if (!content) return alert('Note cannot be empty!');
+
+            const supabaseUrl = 'https://qakgskygmvyoghmirrcp.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFha2dza3lnbXZ5b2dobWlycmNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTY3NDIsImV4cCI6MjA4NjY3Mjc0Mn0.MU0Tt31d0KYyFbVRjLZGEhGqS0_GzQMgGpN1m4JT578';
+
+            try {
+                const response = await fetch(`${supabaseUrl}/rest/v1/notes`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': supabaseKey,
+                        'Authorization': `Bearer ${supabaseKey}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        position_x: parseFloat(x),
+                        position_y: parseFloat(y),
+                        position_z: parseFloat(z),
+                        content
+                    })
+                });
+
+                if (!response.ok) {
+                    if (response.status === 409) { // Unique conflict
+                        throw new Error('You already have a note! One per person.');
+                    }
+                    throw new Error('Failed to save note.');
+                }
+
+                document.getElementById('message').textContent = 'Note saved! Close this page and refresh in VRChat.';
+            } catch (error) {
+                document.getElementById('message').textContent = error.message;
+            }
+        });
     </script>
 </body>
 </html>
