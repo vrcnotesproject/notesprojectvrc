@@ -3,84 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Notes Project - Leave a Note</title>
+    <title>Leave a Note</title>
     <style>
-        body { 
-            margin: 0; padding: 20px; 
-            background: linear-gradient(135deg, #001f3f, #0a2540, #000080); 
-            color: #e0e0e0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
-            overflow: auto;
+        body {
+            background-color: navy;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        form { 
-            background: rgba(0,0,50,0.8); 
-            padding: 40px; border-radius: 20px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
-            border: 2px solid #4169e1; 
-            max-width: 500px; width: 100%;
+        .container {
+            background-color: #001f3f; /* Darker navy */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 400px;
         }
-        h1 { text-align: center; color: #4169e1; margin-bottom: 30px; text-shadow: 0 0 10px #4169e1; }
-        label { display: block; margin: 20px 0 5px; font-weight: bold; }
-        textarea { 
-            width: 100%; height: 150px; 
-            background: rgba(255,255,255,0.1); 
-            border: 1px solid #4169e1; border-radius: 10px; 
-            padding: 15px; color: #e0e0e0; 
-            font-size: 16px; resize: vertical;
-            box-sizing: border-box;
+        h1 {
+            text-align: center;
+            color: #ffffff;
         }
-        textarea::placeholder { color: #888; }
-        button { 
-            width: 100%; padding: 15px; 
-            background: linear-gradient(#4169e1, #0000cd); 
-            border: none; border-radius: 10px; 
-            color: white; font-size: 18px; font-weight: bold; 
-            cursor: pointer; 
-            box-shadow: 0 5px 15px rgba(65,105,225,0.4);
-            transition: all 0.3s;
+        label {
+            display: block;
+            margin: 10px 0 5px;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(65,105,225,0.6); }
-        button:active { transform: translateY(0); }
-        .info { text-align: center; margin-top: 20px; font-size: 14px; color: #aaa; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #000000;
+        }
+        input[readonly] {
+            background-color: #e0e0e0;
+        }
+        textarea {
+            height: 150px;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff; /* Blue accent */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #charCount {
+            text-align: right;
+            font-size: 12px;
+            color: #cccccc;
+        }
+        #status {
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-database.js"></script>
 </head>
 <body>
-    <form id="noteForm">
-        <h1>📝 The Notes Project</h1>
-        <label for="content">Your Note (max 300 chars):</label>
-        <textarea id="content" placeholder="Leave your message here..." maxlength="300" required></textarea>
-        <div class="info" id="info">Loading...</div>
-        <button type="submit">Submit Note</button>
-    </form>
+    <div class="container">
+        <h1>Leave Your Note</h1>
+        <form id="noteForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" readonly>
+            
+            <label for="position">Position (XYZ):</label>
+            <input type="text" id="position" readonly>
+            
+            <label for="noteText">Note (max 300 characters):</label>
+            <textarea id="noteText" maxlength="300"></textarea>
+            <div id="charCount">0/300</div>
+            
+            <button type="submit">Submit Note</button>
+        </form>
+        <div id="status"></div>
+    </div>
+
     <script>
+        // Replace with your actual Firebase config
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "the-notes-project-76941.firebaseapp.com",
+            databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com",
+            projectId: "the-notes-project-76941",
+            storageBucket: "the-notes-project-76941.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Get URL params
         const urlParams = new URLSearchParams(window.location.search);
-        const x = parseFloat(urlParams.get('x'));
-        const y = parseFloat(urlParams.get('y'));
-        const z = parseFloat(urlParams.get('z'));
-        const user = decodeURIComponent(urlParams.get('user') || '');
-        const dbUrl = 'YOUR-DB-URL-HERE/notes';  // e.g., https://notesproject-abc123-default-rtdb.us-central1.firebasedatabase.app/notes
-        const userkey = user.replace(/[\.\#\$\[\]]/g, '_');
-        document.getElementById('info').innerHTML = `Position: (${x?.toFixed(1) ?? 0}, ${y?.toFixed(1) ?? 0}, ${z?.toFixed(1) ?? 0})<br>Author: ${user}`;
-        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+        const user = urlParams.get('user') || 'Unknown';
+        const x = parseFloat(urlParams.get('x')) || 0;
+        const y = parseFloat(urlParams.get('y')) || 0;
+        const z = parseFloat(urlParams.get('z')) || 0;
+
+        // Prefill fields
+        document.getElementById('username').value = user;
+        document.getElementById('position').value = `${x}, ${y}, ${z}`;
+
+        // Character count
+        const textArea = document.getElementById('noteText');
+        const charCount = document.getElementById('charCount');
+        textArea.addEventListener('input', () => {
+            charCount.textContent = `${textArea.value.length}/300`;
+        });
+
+        // Submit form
+        document.getElementById('noteForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const content = document.getElementById('content').value.trim();
-            if (content.length === 0 || content.length > 300) return alert('Note must be 1-300 chars.');
-            const data = { username: user, date: new Date().toISOString(), content, x, y, z };
-            try {
-                const res = await fetch(`${dbUrl}/${userkey}.json`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (res.ok) {
-                    alert('Note saved! Refresh in-world to see it.');
-                } else {
-                    alert('Save failed. Try again.');
-                }
-            } catch (err) {
-                alert('Network error: ' + err.message);
+            const text = textArea.value.trim();
+            if (text.length === 0 || text.length > 300) {
+                alert('Note must be between 1 and 300 characters.');
+                return;
             }
+            const date = new Date().toISOString();
+            const noteData = {
+                position: { x, y, z },
+                text,
+                date
+            };
+            database.ref('notes/' + user).set(noteData)
+                .then(() => {
+                    document.getElementById('status').textContent = 'Note submitted successfully!';
+                    textArea.value = '';
+                })
+                .catch((error) => {
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                });
         });
     </script>
 </body>
