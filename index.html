@@ -3,119 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Notes Project</title>
+    <title>The Notes Project | Submission</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #0a0e17;
-            --card-bg: #161e2d;
-            --accent-color: #007aff;
-            --accent-glow: rgba(0, 122, 255, 0.3);
-            --text-main: #ffffff;
-            --text-dim: #94a3b8;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        h1 {
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -1px;
-        }
-
-        p.subtitle {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 14px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: all 0.2s ease;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 4px var(--accent-glow);
-        }
-
-        textarea {
-            resize: none;
-            height: 100px;
-        }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.1s ease, background 0.2s ease;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: #0063d1;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        #status {
-            margin-top: 15px;
-            font-size: 0.85rem;
-            min-height: 1.2rem;
-        }
-
+        :root { --bg-color: #0a0e17; --card-bg: #161e2d; --accent-color: #007aff; --accent-glow: rgba(0, 122, 255, 0.3); --text-main: #ffffff; --text-dim: #94a3b8; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { background-color: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        h1 { font-weight: 700; margin-bottom: 8px; letter-spacing: -1px; }
+        p.subtitle { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 30px; }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        label { display: block; font-size: 0.8rem; font-weight: 500; margin-bottom: 8px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .read-only-box { width: 100%; padding: 14px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; color: #7dd3fc; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 10px; font-family: monospace; }
+        textarea { width: 100%; padding: 14px; background: #0f172a; border: 1px solid #334155; border-radius: 12px; color: white; font-size: 1rem; box-sizing: border-box; transition: all 0.2s ease; resize: none; height: 100px; }
+        textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 4px var(--accent-glow); }
+        button { width: 100%; padding: 16px; background-color: var(--accent-color); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.1s ease, background 0.2s ease; margin-top: 10px; }
+        button:hover { background-color: #0063d1; }
+        button:disabled { background-color: #334155; cursor: not-allowed; }
+        #status { margin-top: 15px; font-size: 0.85rem; min-height: 1.2rem; }
         .success { color: #10b981; }
         .error { color: #ef4444; }
     </style>
@@ -124,16 +28,16 @@
 
 <div class="container">
     <h1>The Notes Project</h1>
-    <p class="subtitle"> </p>
+    <p id="headerInfo" class="subtitle">Validating Session...</p>
 
     <div class="input-group">
-        <label>Verification Code</label>
-        <input type="text" id="vrcCode" placeholder="Input your code from VRC">
+        <label>Identity & Location</label>
+        <div id="displayMeta" class="read-only-box">Loading VRC Data...</div>
     </div>
 
     <div class="input-group">
         <label>Your Message</label>
-        <textarea id="noteContent" maxlength="140" placeholder="What's on your mind?"></textarea>
+        <textarea id="noteContent" maxlength="140" placeholder="Type your note here..."></textarea>
     </div>
 
     <button id="submitBtn" onclick="submitNote()">Upload Note</button>
@@ -144,53 +48,54 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // Your Firebase Config
-    const firebaseConfig = { 
-        databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com/" 
-    };
-    
+    const firebaseConfig = { databaseURL: "https://the-notes-project-76941-default-rtdb.firebaseio.com/" };
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+
+    // Get URL Parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const uName = urlParams.get('u');
+    const uX = urlParams.get('x');
+    const uY = urlParams.get('y');
+    const uZ = urlParams.get('z');
+    const uSig = urlParams.get('s'); // For future security verification
+
+    if (!uName || !uX || !uY || !uZ) {
+        document.getElementById('headerInfo').innerText = "Error: Invalid Link";
+        document.getElementById('displayMeta').innerText = "Please open the link from within VRChat.";
+        document.getElementById('submitBtn').disabled = true;
+    } else {
+        document.getElementById('headerInfo').innerText = `Hello, ${uName}`;
+        document.getElementById('displayMeta').innerText = `User: ${uName}\nLoc: ${uX}, ${uY}, ${uZ}`;
+    }
 
     window.submitNote = function() {
         const status = document.getElementById('status');
         const btn = document.getElementById('submitBtn');
-        const codeInput = document.getElementById('vrcCode').value.trim();
         const content = document.getElementById('noteContent').value.trim();
 
-        if (!codeInput || !content) {
-            showStatus("Please fill in both fields.", "error");
+        if (!content) {
+            showStatus("Please enter a message.", "error");
             return;
         }
 
-        const raw = codeInput.split('|');
-        if(raw.length < 5) {
-            showStatus("Invalid code format. Try again!", "error");
-            return;
-        }
-
-        const [name, x, y, z, check] = raw;
-
-        // Visual feedback
         btn.disabled = true;
         btn.innerText = "Uploading...";
-        status.innerText = "";
 
-        set(ref(db, 'notes/' + name), {
-            user: name,
-            x: parseFloat(x),
-            y: parseFloat(y),
-            z: parseFloat(z),
+        // Push to Firebase using the username as the key (one note per person)
+        set(ref(db, 'notes/' + uName), {
+            user: uName,
+            x: parseFloat(uX),
+            y: parseFloat(uY),
+            z: parseFloat(uZ),
             text: content,
             time: Date.now()
         }).then(() => {
-            showStatus("Success! Your note is now global.", "success");
-            btn.disabled = false;
-            btn.innerText = "Update Note";
+            showStatus("Success! Your note is now in the world.", "success");
+            btn.innerText = "Updated!";
         }).catch((err) => {
-            showStatus("Database error. Check your rules!", "error");
+            showStatus("Error saving note.", "error");
             btn.disabled = false;
-            btn.innerText = "Upload Note";
         });
     }
 
@@ -200,6 +105,5 @@
         s.className = type;
     }
 </script>
-
 </body>
 </html>
