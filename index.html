@@ -13,13 +13,13 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a1428 0%, #0d2147 100%);
+            background: linear-gradient(135deg, #0a0e27 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            color: #fff;
+            position: relative;
         }
 
         /* Animated Stars Background */
@@ -29,14 +29,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .star {
             position: absolute;
+            width: 2px;
+            height: 2px;
             background: white;
             border-radius: 50%;
-            animation: twinkle 3s infinite;
+            animation: twinkle 3s ease-in-out infinite;
         }
 
         @keyframes twinkle {
@@ -44,294 +47,239 @@
             50% { opacity: 1; }
         }
 
-        @keyframes drift {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .star.drift {
-            animation: twinkle 3s infinite, drift 4s infinite;
-        }
-
-        /* Container */
         .container {
-            background: rgba(15, 25, 50, 0.95);
-            border: 2px solid #4a90e2;
-            border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(74, 144, 226, 0.1);
-            max-width: 500px;
-            width: 90%;
+            position: relative;
+            z-index: 1;
+            background: rgba(15, 52, 96, 0.8);
             backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            width: 90%;
+            max-width: 450px;
+            animation: slideIn 0.6s ease-out;
         }
 
-        .header {
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
             text-align: center;
             margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, #4a90e2 0%, #7bb8ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header p {
-            color: #aaa;
             font-size: 14px;
         }
 
-        /* Form Elements */
         .form-group {
             margin-bottom: 20px;
         }
 
         label {
             display: block;
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a90e2;
+            font-weight: 500;
             font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
-        .input-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
+        .info-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 3px solid #00d4ff;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            color: rgba(0, 212, 255, 0.8);
+            font-size: 12px;
+            line-height: 1.5;
         }
 
         input[type="text"],
-        input[type="number"],
         textarea {
             width: 100%;
             padding: 12px;
-            background: rgba(74, 144, 226, 0.1);
-            border: 1px solid #4a90e2;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
             border-radius: 8px;
-            color: #fff;
+            color: white;
             font-family: inherit;
             font-size: 14px;
             transition: all 0.3s ease;
-        }
-
-        input[type="text"]::placeholder,
-        input[type="number"]::placeholder,
-        textarea::placeholder {
-            color: #666;
+            resize: none;
         }
 
         input[type="text"]:focus,
-        input[type="number"]:focus,
         textarea:focus {
             outline: none;
-            background: rgba(74, 144, 226, 0.2);
-            border-color: #7bb8ff;
-            box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
         }
 
-        input[type="text"]:disabled,
-        input[type="number"]:disabled {
-            background: rgba(50, 60, 100, 0.5);
-            border-color: #333;
-            color: #888;
-            cursor: not-allowed;
+        input[type="text"]::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
         }
 
         textarea {
-            resize: vertical;
-            min-height: 120px;
-            font-family: 'Courier New', monospace;
+            height: 120px;
+            margin-top: 8px;
         }
 
         .char-count {
-            text-align: right;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 12px;
-            color: #888;
             margin-top: 5px;
+            text-align: right;
         }
 
         .char-count.warning {
             color: #ff6b6b;
         }
 
-        /* Coordinates Display */
-        .coords-display {
-            background: rgba(50, 100, 200, 0.1);
-            padding: 15px;
+        .position-display {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid rgba(0, 212, 255, 0.2);
             border-radius: 8px;
-            border-left: 3px solid #4a90e2;
+            padding: 12px;
             margin-bottom: 20px;
-        }
-
-        .coords-display p {
-            font-size: 13px;
-            color: #aaa;
-            margin-bottom: 8px;
-        }
-
-        .coords-display .coord-value {
+            font-size: 12px;
+            color: rgba(0, 212, 255, 0.8);
             font-family: 'Courier New', monospace;
-            color: #4a90e2;
-            font-weight: bold;
+            word-break: break-all;
         }
 
-        /* Button */
-        .submit-btn {
+        button {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #4a90e2 0%, #7bb8ff 100%);
+            background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+            color: white;
             border: none;
             border-radius: 8px;
-            color: white;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
         }
 
-        .submit-btn:hover:not(:disabled) {
+        button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(74, 144, 226, 0.4);
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
         }
 
-        .submit-btn:active:not(:disabled) {
+        button:active:not(:disabled) {
             transform: translateY(0);
         }
 
-        .submit-btn:disabled {
-            opacity: 0.6;
+        button:disabled {
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
-        /* Status Messages */
-        .status {
-            margin-top: 15px;
+        .message {
             padding: 12px;
             border-radius: 8px;
+            margin-top: 15px;
             text-align: center;
             font-size: 14px;
             display: none;
         }
 
-        .status.success {
+        .message.success {
             background: rgba(76, 175, 80, 0.2);
-            color: #4caf50;
-            border: 1px solid #4caf50;
+            color: #76ff76;
+            border: 1px solid rgba(76, 175, 80, 0.4);
             display: block;
         }
 
-        .status.error {
-            background: rgba(244, 67, 54, 0.2);
-            color: #f44336;
-            border: 1px solid #f44336;
+        .message.error {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.4);
             display: block;
         }
 
-        .status.loading {
-            background: rgba(74, 144, 226, 0.2);
-            color: #4a90e2;
-            border: 1px solid #4a90e2;
-            display: block;
+        .loading {
+            display: none;
+            color: #00d4ff;
+            text-align: center;
+            font-size: 14px;
         }
 
-        /* Loading spinner */
         .spinner {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #fff;
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-top: 2px solid #00d4ff;
             border-radius: 50%;
+            width: 20px;
+            height: 20px;
             animation: spin 0.8s linear infinite;
+            margin: 10px auto;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        .error-text {
-            color: #ff6b6b;
-            font-size: 12px;
-            margin-top: 5px;
-        }
-
-        .info-box {
-            background: rgba(74, 144, 226, 0.15);
-            border-left: 3px solid #4a90e2;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #bbb;
-            margin-top: 15px;
-            line-height: 1.5;
-        }
     </style>
 </head>
 <body>
-    <!-- Stars Background -->
     <div class="stars" id="starsContainer"></div>
 
-    <!-- Main Container -->
     <div class="container">
-        <div class="header">
-            <h1>✨ The Notes Project</h1>
-            <p>Leave your mark in the world</p>
-        </div>
+        <h1>✦ The Notes Project ✦</h1>
+        <p class="subtitle">Leave your mark in virtual space</p>
 
-        <div class="coords-display">
-            <p>Your Position:</p>
-            <p>X: <span class="coord-value" id="coordX">Loading...</span></p>
-            <p>Y: <span class="coord-value" id="coordY">Loading...</span></p>
-            <p>Z: <span class="coord-value" id="coordZ">Loading...</span></p>
+        <div class="info-box">
+            <p>💡 Your note will be placed at your current position and visible to all visitors.</p>
         </div>
 
         <form id="noteForm">
-            <!-- Username (Read-only) -->
             <div class="form-group">
-                <label for="username">Your Username</label>
-                <input 
-                    type="text" 
-                    id="username" 
-                    name="username" 
-                    disabled 
-                    value="Loading..."
-                >
-                <div class="error-text" id="usernameError"></div>
+                <label for="username">Your VRChat Username</label>
+                <input type="text" id="username" placeholder="Enter your username" maxlength="50" disabled>
             </div>
 
-            <!-- Note Content -->
             <div class="form-group">
-                <label for="content">Your Note (Max 300 characters)</label>
-                <textarea 
-                    id="content" 
-                    name="content" 
-                    placeholder="Share your thoughts, memories, or messages..." 
-                    maxlength="300"
-                    required
-                ></textarea>
-                <div class="char-count">
-                    <span id="charCount">0</span> / 300
+                <label>Your Position in World</label>
+                <div class="position-display" id="positionDisplay">
+                    Loading position data...
                 </div>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="submit-btn" id="submitBtn">Submit Note</button>
+            <div class="form-group">
+                <label for="content">Your Note (max 300 characters)</label>
+                <textarea id="content" placeholder="Write something meaningful..." maxlength="300"></textarea>
+                <div class="char-count"><span id="charCount">0</span>/300</div>
+            </div>
 
-            <!-- Status Message -->
-            <div class="status" id="statusMessage"></div>
+            <button type="submit" id="submitBtn">Submit Note</button>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Submitting your note...</p>
+            </div>
+
+            <div class="message" id="message"></div>
         </form>
-
-        <div class="info-box">
-            💡 <strong>One note per username.</strong> Submitting again will update your existing note.
-        </div>
     </div>
 
     <script>
@@ -339,197 +287,130 @@
         const SUPABASE_URL = 'https://qakgskygmvyoghmirrcp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFha2dza3lnbXZ5b2dobWlycmNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwOTY3NDIsImV4cCI6MjA4NjY3Mjc0Mn0.MU0Tt31d0KYyFbVRjLZGEhGqS0_GzQMgGpN1m4JT578';
 
-        // DOM Elements
-        const form = document.getElementById('noteForm');
-        const usernameInput = document.getElementById('username');
-        const contentInput = document.getElementById('content');
-        const charCountSpan = document.getElementById('charCount');
-        const statusMessage = document.getElementById('statusMessage');
-        const submitBtn = document.getElementById('submitBtn');
-        const coordXEl = document.getElementById('coordX');
-        const coordYEl = document.getElementById('coordY');
-        const coordZEl = document.getElementById('coordZ');
-
-        let userData = {
-            username: '',
-            x: 0,
-            y: 0,
-            z: 0
-        };
-
-        // Initialize
-        function init() {
-            generateStars();
-            getURLParameters();
-            setupEventListeners();
-        }
-
-        // Generate animated stars
-        function generateStars() {
-            const starsContainer = document.getElementById('starsContainer');
-            const starCount = 100;
-
-            for (let i = 0; i < starCount; i++) {
+        // Generate random stars
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
-                star.className = `star ${Math.random() > 0.5 ? 'drift' : ''}`;
-                
-                const size = Math.random() * 2 + 1;
-                const delay = Math.random() * 3;
-                const duration = Math.random() * 2 + 2;
-
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
+                star.className = 'star';
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = delay + 's';
-                star.style.animationDuration = duration + 's';
-
-                starsContainer.appendChild(star);
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
             }
         }
 
-        // Get URL parameters (username and coordinates from VRChat)
-        function getURLParameters() {
+        // Parse URL parameters
+        function getURLParameter(name) {
             const params = new URLSearchParams(window.location.search);
-            
-            userData.username = params.get('username') || 'Unknown';
-            userData.x = parseFloat(params.get('x')) || 0;
-            userData.y = parseFloat(params.get('y')) || 0;
-            userData.z = parseFloat(params.get('z')) || 0;
+            return params.get(name);
+        }
 
-            // Display values
-            usernameInput.value = userData.username;
-            coordXEl.textContent = userData.x.toFixed(2);
-            coordYEl.textContent = userData.y.toFixed(2);
-            coordZEl.textContent = userData.z.toFixed(2);
+        // Initialize form
+        function initializeForm() {
+            const username = getURLParameter('username');
+            const posX = getURLParameter('x');
+            const posY = getURLParameter('y');
+            const posZ = getURLParameter('z');
 
-            // Validate username
-            if (userData.username === 'Unknown' || userData.username === '') {
-                showStatus('Error: Username not provided. Please use the VRChat world button.', 'error');
-                submitBtn.disabled = true;
+            if (username) {
+                document.getElementById('username').value = username;
+            }
+
+            if (posX && posY && posZ) {
+                document.getElementById('positionDisplay').textContent = 
+                    `X: ${parseFloat(posX).toFixed(2)}\nY: ${parseFloat(posY).toFixed(2)}\nZ: ${parseFloat(posZ).toFixed(2)}`;
             }
         }
 
-        // Event listeners
-        function setupEventListeners() {
-            contentInput.addEventListener('input', updateCharCount);
-            form.addEventListener('submit', handleSubmit);
-        }
+        // Character counter
+        document.getElementById('content').addEventListener('input', function() {
+            const count = this.value.length;
+            const charCountEl = document.getElementById('charCount');
+            charCountEl.textContent = count;
 
-        // Update character count
-        function updateCharCount() {
-            const count = contentInput.value.length;
-            charCountSpan.textContent = count;
-
-            if (count > 280) {
-                charCountSpan.parentElement.classList.add('warning');
+            if (count > 250) {
+                charCountEl.parentElement.classList.add('warning');
             } else {
-                charCountSpan.parentElement.classList.remove('warning');
+                charCountEl.parentElement.classList.remove('warning');
             }
-        }
+        });
 
-        // Handle form submission
-        async function handleSubmit(e) {
+        // Form submission
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const content = contentInput.value.trim();
+            const username = document.getElementById('username').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const posX = getURLParameter('x');
+            const posY = getURLParameter('y');
+            const posZ = getURLParameter('z');
 
-            // Validation
-            if (!content) {
-                showStatus('Please enter some text for your note.', 'error');
+            if (!username || !content || !posX || !posY || !posZ) {
+                showMessage('Missing required information', 'error');
                 return;
             }
 
             if (content.length > 300) {
-                showStatus('Note exceeds 300 character limit.', 'error');
+                showMessage('Note exceeds 300 characters', 'error');
                 return;
             }
 
-            if (userData.username === 'Unknown' || userData.username === '') {
-                showStatus('Invalid username. Please use the VRChat world button.', 'error');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            showStatus('<span class="spinner"></span> Submitting your note...', 'loading');
+            showLoading(true);
 
             try {
-                await submitNote(content);
-                showStatus('✓ Note submitted successfully! You can close this window.', 'success');
-                contentInput.value = '';
-                updateCharCount();
-                setTimeout(() => submitBtn.disabled = false, 3000);
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/notes`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            username,
+                            content,
+                            position_x: parseFloat(posX),
+                            position_y: parseFloat(posY),
+                            position_z: parseFloat(posZ),
+                            date: new Date().toISOString()
+                        })
+                    }
+                );
+
+                if (response.ok) {
+                    showMessage('✓ Note submitted successfully!', 'success');
+                    document.getElementById('content').value = '';
+                    document.getElementById('charCount').textContent = '0';
+                    setTimeout(() => {
+                        window.close();
+                    }, 2000);
+                } else {
+                    const error = await response.json();
+                    showMessage(`Error: ${error.message || 'Failed to submit note'}`, 'error');
+                }
             } catch (error) {
-                showStatus(`Error: ${error.message}`, 'error');
-                submitBtn.disabled = false;
+                showMessage(`Error: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
             }
+        });
+
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
         }
 
-        // Submit note to Supabase
-        async function submitNote(content) {
-            const noteData = {
-                username: userData.username,
-                x: userData.x,
-                y: userData.y,
-                z: userData.z,
-                content: content
-            };
-
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/notes`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify(noteData)
-                }
-            );
-
-            if (!response.ok) {
-                // If 409, it's a duplicate (update instead)
-                if (response.status === 409) {
-                    return updateNote(noteData);
-                }
-                throw new Error(`Server error: ${response.status}`);
-            }
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('submitBtn').disabled = show;
         }
 
-        // Update existing note
-        async function updateNote(noteData) {
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/notes?username=eq.${encodeURIComponent(noteData.username)}`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({
-                        content: noteData.content,
-                        x: noteData.x,
-                        y: noteData.y,
-                        z: noteData.z
-                    })
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
-            }
-        }
-
-        // Show status message
-        function showStatus(message, type) {
-            statusMessage.className = `status ${type}`;
-            statusMessage.innerHTML = message;
-        }
-
-        // Start
-        init();
+        // Initialize on load
+        createStars();
+        initializeForm();
     </script>
 </body>
 </html>
