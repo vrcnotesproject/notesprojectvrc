@@ -133,4 +133,139 @@
         }
     </script>
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Notes Project</title>
+    <style>
+        body {
+            background-color: navy;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        form {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            z-index: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+        }
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: white;
+            color: navy;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="stars"></div>
+    <form id="noteForm">
+        <label>Username: <input type="text" id="username" readonly></label>
+        <label>Position X: <input type="text" id="x" readonly></label>
+        <label>Position Y: <input type="text" id="y" readonly></label>
+        <label>Position Z: <input type="text" id="z" readonly></label>
+        <label>Note (max 300 chars): <textarea id="text" maxlength="300"></textarea></label>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://your-project.supabase.co';  // Replace with your Supabase URL
+        const supabaseKey = 'your-anon-key';  // Replace with your Supabase anon key
+        const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Get query params and prefill
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('username').value = params.get('username') || '';
+        document.getElementById('x').value = params.get('x') || '';
+        document.getElementById('y').value = params.get('y') || '';
+        document.getElementById('z').value = params.get('z') || '';
+
+        // Form submit
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = params.get('username');
+            const x = parseFloat(params.get('x'));
+            const y = parseFloat(params.get('y'));
+            const z = parseFloat(params.get('z'));
+            const text = document.getElementById('text').value.trim();
+
+            if (!username || isNaN(x) || isNaN(y) || isNaN(z) || text.length === 0 || text.length > 300) {
+                alert('Invalid input. Text must be 1-300 chars, and all fields required.');
+                return;
+            }
+
+            const { error } = await supabase.from('notes').insert({ username, date: new Date().toISOString(), text, x, y, z });
+
+            if (error) {
+                if (error.code === '23505') {
+                    alert('One note per person only.');
+                } else {
+                    alert('Error submitting note: ' + error.message);
+                }
+            } else {
+                alert('Note submitted successfully!');
+            }
+        });
+
+        // Animated stars
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = star.style.height = `${Math.random() * 2 + 1}px`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
+            document.getElementById('stars').appendChild(star);
+        }
+    </script>
+</body>
 </html>
