@@ -2,7 +2,11 @@
   "name": "vrc-notes-project",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
+    "supabase": "1.1.1",
     "@supabase/supabase-client": "2.39.0",
     "axios": "1.6.0",
     "discord-interactions": "3.4.0"
