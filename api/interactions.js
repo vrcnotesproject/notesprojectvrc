@@ -1,7 +1,8 @@
 const { InteractionType, InteractionResponseType, verifyKey } = require('discord-interactions');
-// Ensure this line uses @supabase/supabase-client and NOT 'sb'
-const { createClient } = require('@supabase/supabase-client'); 
 const axios = require('axios');
+
+// CHANGE THIS LINE:
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -49,5 +50,6 @@ module.exports = async (req, res) => {
     }
 
 };
+
 
 
