@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/interactions",
+      "destination": "/api/interactions.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/interactions.js"
+    }
+  ]
+}
