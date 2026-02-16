@@ -1,5 +1,6 @@
 const { InteractionType, InteractionResponseType, verifyKey } = require('discord-interactions');
-const { createClient } = require('@supabase/supabase-client');
+// Change this line:
+const { createClient } = require('supabase'); 
 const axios = require('axios');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -46,4 +47,5 @@ module.exports = async (req, res) => {
             data: { content: "Note saved! Refresh your VRChat world.", flags: 64 }
         });
     }
+
 };
