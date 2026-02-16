@@ -1,6 +1,5 @@
 const { InteractionType, InteractionResponseType, verifyKey } = require('discord-interactions');
-// Change this line:
-const { createClient } = require('supabase'); 
+const { createClient } = require('sb'); // This matches the 'sb' alias in package.json
 const axios = require('axios');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -49,3 +48,4 @@ module.exports = async (req, res) => {
     }
 
 };
+
