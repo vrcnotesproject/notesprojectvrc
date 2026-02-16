@@ -6,8 +6,8 @@
     "node": "20.x"
   },
   "dependencies": {
-    "@supabase/supabase-client": "https://github.com/supabase/supabase-js/tarball/master",
-    "axios": "latest",
-    "discord-interactions": "latest"
+    "@supabase/supabase-client": "2.39.0",
+    "axios": "1.6.0",
+    "discord-interactions": "3.4.0"
   }
 }
