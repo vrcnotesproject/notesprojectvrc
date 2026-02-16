@@ -2,46 +2,55 @@ const { InteractionType, InteractionResponseType, verifyKey } = require('discord
 const { createClient } = require('@supabase/supabase-js');
 const axios = require('axios');
 
-// Initialize Supabase
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-
-// Helper to get raw body in CommonJS
-const getRawBody = (req) => {
-    return new Promise((resolve, reject) => {
-        let bodyChunks = [];
-        req.on('data', (chunk) => bodyChunks.push(chunk));
-        req.on('end', () => resolve(Buffer.concat(bodyChunks).toString()));
-        req.on('error', reject);
-    });
+// Vercel Config: This prevents Vercel from messing with the raw body
+export const config = {
+    api: {
+        bodyParser: false,
+    },
 };
 
+// Helper function to read the raw body from the stream
+async function getRawBody(readable) {
+    const chunks = [];
+    for await (const chunk of readable) {
+        chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+    }
+    return Buffer.concat(chunks).toString('utf8');
+}
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
 module.exports = async (req, res) => {
-    // 1. We MUST get the body BEFORE any parsing happens
+    // 1. Get the Raw Body and Headers
     const signature = req.headers['x-signature-ed25519'];
     const timestamp = req.headers['x-signature-timestamp'];
     
-    // Get the actual string sent by Discord
-    const body = await getRawBody(req);
+    let rawBody;
+    try {
+        rawBody = await getRawBody(req);
+    } catch (err) {
+        return res.status(400).send('Error reading body');
+    }
 
-    // 2. Verify the Signature
+    // 2. Security Verification (The Handshake)
     const isValidRequest = verifyKey(
-        body,
+        rawBody,
         signature,
         timestamp,
         process.env.DISCORD_PUBLIC_KEY
     );
 
     if (!isValidRequest) {
-        console.error("Signature Verification Failed");
+        console.error("Signature verification failed. Check your Public Key!");
         return res.status(401).send('Invalid request signature');
     }
 
-    // 3. Parse the body to handle the logic
-    const interaction = JSON.parse(body);
+    // 3. Parse the body manually now that we've verified it
+    const interaction = JSON.parse(rawBody);
 
-    // 4. Handle PING (Discord Verification)
+    // 4. Handle the PING (The part Discord checks when you hit Save)
     if (interaction.type === InteractionType.PING) {
-        return res.send({
+        return res.status(200).json({
             type: InteractionResponseType.PONG,
         });
     }
@@ -53,7 +62,6 @@ module.exports = async (req, res) => {
             const message = interaction.data.components[1].components[0].value;
             const [x, y, z, hash] = rawData.split('|');
 
-            // Save to Supabase
             await supabase.from('notes').upsert({
                 discord_id: interaction.member.user.id,
                 username: interaction.member.user.username,
@@ -61,16 +69,18 @@ module.exports = async (req, res) => {
                 message: message
             });
 
-            // Update Gist for VRChat
             const { data: allNotes } = await supabase.from('notes').select('*');
             await axios.patch(`https://api.github.com/gists/${process.env.GIST_ID}`, 
                 { files: { "notes.json": { content: JSON.stringify(allNotes) } } },
-                { headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` } }
+                { headers: { 
+                    Authorization: `token ${process.env.GITHUB_TOKEN}`,
+                    Accept: "application/vnd.github.v3+json"
+                } }
             );
 
-            return res.send({
+            return res.status(200).json({
                 type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-                data: { content: "✅ Note saved!", flags: 64 }
+                data: { content: "✅ Note saved! Refresh your VRChat world.", flags: 64 }
             });
         } catch (err) {
             console.error("Logic Error:", err);
