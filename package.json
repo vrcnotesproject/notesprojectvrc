@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@supabase/supabase-client": "latest",
+    "supabase/supabase-js": "latest",
     "axios": "latest",
     "discord-interactions": "latest"
   }
